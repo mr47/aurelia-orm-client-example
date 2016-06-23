@@ -6,9 +6,8 @@ import {EntityManager} from 'aurelia-orm';
 export class Welcome {
 
   constructor (entityManager) {
-    this.contactRepository = entityManager.getRepository('contacts');
-    this.newContact        = entityManager.getEntity('contacts');
-
+    this.entityManager = entityManager;
+    this.contactRepository = entityManager.getRepository('contact');
     this.contactRepository
       .find()
       .then((contacts)=>{
@@ -16,7 +15,7 @@ export class Welcome {
           this.contacts = contacts;
       })
   }
-
+  // For router
   // attached (params) {
   //   // Find all articles that belong to category params.category.
   //   this.contactRepository
@@ -29,26 +28,28 @@ export class Welcome {
 
   create () {
     // Validate, and persist entity to the server.
-    // console.log(this.newContact.getValidation()); // its null
-    // this.newContact.getValidation().validate()
-    //   .then(result => {
-    //     console.log(result);
-    //     // Validation passed, persist entity.
-    //     return this.newContact.save()
-    //   })
-    //   .catch(error => {/* Validation failed */});
-      this.newContact
+    let  newContact = this.entityManager.getEntity('contact');
+      newContact
       .setData({
         firstname: this.firstname,
-        lastname: this.lastname
+        lastname: this.lastname,
+        age: this.age
       })
-      .save();
+      .getValidation().validate()
+      .then(result => {
+        console.log(result);
+        // Validation passed, persist entity.
+        return newContact.save()
+      })
+      .then(()=>{
+        this.contactRepository
+          .find()
+          .then((contacts)=>{
+            this.contacts = contacts;
+          })
+      })
+      .catch(error => {/* Validation failed */});
 
-      this.contactRepository
-        .find()
-        .then((contacts)=>{
-          this.contacts = contacts;
-        })
   }
 
   destroy (index) {
