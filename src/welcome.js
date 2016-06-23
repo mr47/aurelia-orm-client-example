@@ -28,7 +28,7 @@ export class Welcome {
 
   create () {
     // Validate, and persist entity to the server.
-    let  newContact = this.entityManager.getEntity('contact');
+    let newContact = this.entityManager.getEntity('contact');
       newContact
       .setData({
         firstname: this.firstname,
